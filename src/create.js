@@ -1,11 +1,3 @@
-const form = document.querySelector('form');
-
-form.addEventListener('submit', (ev => {
-    ev.preventDefault();
-    const formData = new FormData(ev.target);
-    onSubmit([...formData.entries()].reduce((p, [k, v]) => Object.assign(p, { [k]: v }), {}));
-}));
-
 async function onSubmit(data) {
     const body = JSON.stringify({
         name: data.name,
@@ -30,11 +22,35 @@ async function onSubmit(data) {
         });
         
         if (response.status == 200) {
-            window.location.pathname = 'index.html';
+            onSuccess();
         } else {
             throw new Error(await response.json());
         }
     } catch (err) {
         console.error(err.message);
     }
+}
+
+let main;
+let section;
+let onSuccess;
+
+export function setupCreate(mainTarget, sectionTarget, onSuccessTarget) {
+    main = mainTarget;
+    section = sectionTarget;
+    onSuccess = onSuccessTarget;
+
+    const form = section.querySelector('form');
+
+form.addEventListener('submit', (ev => {
+    ev.preventDefault();
+    const formData = new FormData(ev.target);
+    onSubmit([...formData.entries()].reduce((p, [k, v]) => Object.assign(p, { [k]: v }), {}));
+}));
+
+}
+
+export function showCreate() {
+    main.innerHTML = '';
+    main.appendChild(section);
 }
