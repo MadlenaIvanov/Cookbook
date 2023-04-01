@@ -1,3 +1,5 @@
+import {showCatalog} from './catalog.js';
+
 async function onSubmit(data) {
     const body = JSON.stringify({
         name: data.name,
@@ -22,7 +24,7 @@ async function onSubmit(data) {
         });
         
         if (response.status == 200) {
-            onSuccess();
+            showCatalog();
         } else {
             throw new Error(await response.json());
         }
@@ -33,12 +35,12 @@ async function onSubmit(data) {
 
 let main;
 let section;
-let onSuccess;
+let setActiveNav;
 
-export function setupCreate(mainTarget, sectionTarget, onSuccessTarget) {
+export function setupCreate(mainTarget, sectionTarget, setActiveNavCb) {
     main = mainTarget;
     section = sectionTarget;
-    onSuccess = onSuccessTarget;
+    setActiveNav = setActiveNavCb;
 
     const form = section.querySelector('form');
 
@@ -51,6 +53,7 @@ form.addEventListener('submit', (ev => {
 }
 
 export function showCreate() {
+    setActiveNav('createLink');
     main.innerHTML = '';
     main.appendChild(section);
 }

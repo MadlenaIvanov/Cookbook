@@ -1,13 +1,26 @@
-import { setupCatalog, showCatalog } from './catalog.js';
-import { setupLogin, showLogin } from './login.js';
-import { setupRegister, showRegister } from './register.js';
-import { setupCreate, showCreate } from './create.js';
+import {
+    setupCatalog,
+    showCatalog
+} from './catalog.js';
+import {
+    setupLogin,
+    showLogin
+} from './login.js';
+import {
+    setupRegister,
+    showRegister
+} from './register.js';
+import {
+    setupCreate,
+    showCreate
+} from './create.js';
 
 main();
 
 function main() {
     setUserNav();
 
+    const nav = document.querySelector('nav')
     const main = document.querySelector('main');
     const catalogSection = document.getElementById('catalogSection');
     const loginSection = document.getElementById('loginSection');
@@ -21,10 +34,10 @@ function main() {
         'createLink': showCreate
     };
 
-    setupCatalog(main, catalogSection);
-    setupLogin(main, loginSection, () => { setUserNav(); setActiveNav('catalogLink'); showCatalog()});
-    setupRegister(main, registerSection, () => { setUserNav(); setActiveNav('catalogLink'); showCatalog()});
-    setupCreate(main, createSection, () => { setActiveNav('catalogLink'); showCatalog()});
+    setupCatalog(main, catalogSection, setActiveNav);
+    setupLogin(main, loginSection, setActiveNav);
+    setupRegister(main, registerSection, setActiveNav);
+    setupCreate(main, createSection, setActiveNav);
 
 
     setupNavigation();
@@ -32,8 +45,8 @@ function main() {
     showCatalog();
 
     function setActiveNav(targetId) {
-        [...document.querySelector('nav').querySelectorAll('a')].forEach(l => {
-            if(l.id == targetId) {
+        [...nav.querySelectorAll('a')].forEach(l => {
+            if (l.id == targetId) {
                 l.classList.add('active');
             } else {
                 l.classList.remove('active');
@@ -42,28 +55,30 @@ function main() {
     }
 
     function setupNavigation() {
-        document.querySelector('nav').addEventListener('click', (event) => {
-            if(event.target.tagName == 'A') {
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+
+        nav.addEventListener('click', (event) => {
+            if (event.target.tagName == 'A') {
                 const view = links[event.target.id];
-                if(typeof view == 'function'){
+                if (typeof view == 'function') {
                     event.preventDefault();
-                    setActiveNav(event.target.id);
                     view();
                 }
 
             }
         })
     }
-}
 
-function setUserNav() {
-    if (sessionStorage.getItem('authToken') != null) {
-        document.getElementById('user').style.display = 'inline-block';
-        document.getElementById('guest').style.display = 'none';
-        document.getElementById('logoutBtn').addEventListener('click', logout);
-    } else {
-        document.getElementById('user').style.display = 'none';
-        document.getElementById('guest').style.display = 'inline-block';
+    function setUserNav() {
+        if (sessionStorage.getItem('authToken') != null) {
+            document.getElementById('user').style.display = 'inline-block';
+            document.getElementById('guest').style.display = 'none';
+        } else {
+            document.getElementById('user').style.display = 'none';
+            document.getElementById('guest').style.display = 'inline-block';
+        }
     }
 
     async function logout() {
@@ -81,5 +96,6 @@ function setUserNav() {
             console.error(await response.json());
         }
     }
-}
 
+
+}
