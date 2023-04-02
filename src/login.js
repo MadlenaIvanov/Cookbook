@@ -17,6 +17,8 @@ async function onSubmit(data) {
         const data = await response.json();
         if (response.status == 200) {
             sessionStorage.setItem('authToken', data.accessToken);
+            sessionStorage.setItem('userId', data._id);
+            sessionStorage.setItem('email', data.email);
 
             document.getElementById('user').style.display = 'inline-block';
             document.getElementById('guest').style.display = 'none';

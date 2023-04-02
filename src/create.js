@@ -1,4 +1,4 @@
-import {showCatalog} from './catalog.js';
+import {showDetails} from './details.js';
 
 async function onSubmit(data) {
     const body = JSON.stringify({
@@ -10,7 +10,8 @@ async function onSubmit(data) {
 
     const token = sessionStorage.getItem('authToken');
     if (token == null) {
-        return window.location.pathname = 'index.html';
+        return alert('You are not logged in!');
+
     }
 
     try {
@@ -24,7 +25,8 @@ async function onSubmit(data) {
         });
         
         if (response.status == 200) {
-            showCatalog();
+            const recipe = await response.json();
+            showDetails(recipe._id);
         } else {
             throw new Error(await response.json());
         }
