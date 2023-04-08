@@ -1,69 +1,55 @@
 import { setupCatalog, showCatalog } from './catalog.js';
+import { setupCreate, showCreate } from './create.js';
 import { setupLogin, showLogin } from './login.js';
 import { setupRegister, showRegister } from './register.js';
-import { setupCreate, showCreate } from './create.js';
 import { setupDetails } from './details.js';
 import { setupEdit } from './edit.js';
 
-main();
 
-function main() {
+window.addEventListener('load', async () => {
     setUserNav();
 
-    const nav = document.querySelector('nav')
     const main = document.querySelector('main');
-    const catalogSection = document.getElementById('catalogSection');
-    const loginSection = document.getElementById('loginSection');
-    const registerSection = document.getElementById('registerSection');
-    const createSection = document.getElementById('createSection');
-    const detailsSection = document.getElementById('detailsSection');
-    const editSection = document.getElementById('editSection');
+    const nav = document.querySelector('nav');
 
+    setupCatalog(main, document.getElementById('catalog'), setActiveNav);
+    setupCreate(main, document.getElementById('create'), setActiveNav);
+    setupLogin(main, document.getElementById('login'), setActiveNav);
+    setupRegister(main, document.getElementById('register'), setActiveNav);
+    setupDetails(main, document.getElementById('details'), setActiveNav);
+    setupEdit(main, document.getElementById('edit'), setActiveNav);
+    document.getElementById('views').remove();
+
+    
     const links = {
         'catalogLink': showCatalog,
+        'createLink': showCreate,
         'loginLink': showLogin,
         'registerLink': showRegister,
-        'createLink': showCreate
+        'logoutBtn': logout,
     };
-
-    setupCatalog(main, catalogSection, setActiveNav);
-    setupLogin(main, loginSection, setActiveNav);
-    setupRegister(main, registerSection, setActiveNav);
-    setupCreate(main, createSection, setActiveNav);
-    setupDetails(main, detailsSection, setActiveNav);
-    setupEdit(main, editSection, setActiveNav);
-
-
     setupNavigation();
-
+    
+    // Start application in catalog view
     showCatalog();
 
-    function setActiveNav(targetId) {
-        [...nav.querySelectorAll('a')].forEach(l => {
-            if (l.id == targetId) {
-                l.classList.add('active');
-            } else {
-                l.classList.remove('active');
-            }
-        })
-    }
 
     function setupNavigation() {
-
-        document.getElementById('logoutBtn').addEventListener('click', logout);
-
-
-        nav.addEventListener('click', (event) => {
-            if (event.target.tagName == 'A') {
-                const view = links[event.target.id];
-                if (typeof view == 'function') {
-                    event.preventDefault();
-                    view();
+        nav.addEventListener('click', (ev) => {
+            if (ev.target.tagName == 'A') {
+                const handler = links[ev.target.id];
+                if (handler) {
+                    ev.preventDefault();
+                    handler();
                 }
-
             }
-        })
+        });
     }
+
+    function setActiveNav(targetId) {
+        [...nav.querySelectorAll('a')].forEach(a => a.id == targetId ? a.classList.add('active') : a.classList.remove('active'));
+    }
+
 
     function setUserNav() {
         if (sessionStorage.getItem('authToken') != null) {
@@ -84,14 +70,10 @@ function main() {
         });
         if (response.status == 200) {
             sessionStorage.removeItem('authToken');
-            sessionStorage.removeItem('userId');
-            sessionStorage.removeItem('email');
             setUserNav();
             showCatalog();
         } else {
             console.error(await response.json());
         }
     }
-
-
-}
+});
