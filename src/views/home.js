@@ -1,42 +1,55 @@
+import { html } from '../../node_modules/lit-html/lit-html.js'
 import { e } from '../dom.js';
 import { getRecent } from '../api/data.js';
 
+const homeTemplate = (recipes, onClick) => html`
+        <section id="home">
+            <div class="hero">
+                <h2>Welcome to My Cookbook</h2>
+            </div>
+            <header class="section-title">Recently added recipes</header>
+            <div class="recent-recipes" @click=${onClick}>${recipes}</div>
+            <footer class="section-title">
+                <p>Browse all recipes in the <a href="/catalog">Catalog</a></p>
+            </footer>
+        </section>
+`;
+
+const previewTemplate = (recipe) => html`
+<article class="recent" data-id=${recipe._id}>
+    <div class="recent-preview"><img src=${recipe.img}></div>
+    <div class="recent-title">${recipe.name}</div>
+</article>
+`;
+
+const spacerTemplate = () => html`<div class="recent-space"></div>`;
 
 export function setupHome(section, nav) {
-    const container = section.querySelector('.recent-recipes');
     return showHome;
 
     async function showHome() {
-        container.innerHTML = 'Loading&hellip;';
 
         const recipes = await getRecent();
-        const cards = recipes.map(createRecipePreview);
+        const cards = recipes.map(previewTemplate);
+        const result = [];
 
-        const fragment = document.createDocumentFragment();
-
-        while (cards.length > 0) {
-            fragment.appendChild(cards.shift());
-            if (cards.length > 0) {
-                fragment.appendChild(createSpacer());
-            }
+        for (let i = 0; i < cards.length; i++) {
+            result.push(cards[i]);
+            if(i < cards.length - 1) {
+                result.push(spacerTemplate());
+            }            
         }
-        container.innerHTML = '';
-        container.appendChild(fragment);
-
-        return section;
+        return homeTemplate(result, onClick);
     }
 
-    function createRecipePreview(recipe) {
-        const result = e('article', { className: 'recent', onClick: () => nav.goTo('details', recipe._id) },
-            e('div', { className: 'recent-preview' }, e('img', { src: recipe.img })),
-            e('div', { className: 'recent-title' }, recipe.name),
-        );
-
-        return result;
-    }
-
-    function createSpacer() {
-        return e('div', { className: 'recent-space' });
+    function onClick(event) {
+        let article = event.target;
+        while(article.tagName != 'ARTICLE' && article != event.currentTarget) {
+            article = article.parentNode;
+        }
+        if(article.dataset.id) {
+            nav.goTo('details', article.dataset.id);
+        }
     }
 
 }

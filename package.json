@@ -1,19 +1,23 @@
 {
-  "name": "architecturetest",
+  "name": "cookbook",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "start": "http-server -a localhost -p 3000 -P http://localhost:3000?"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MadlenaIvanov/Cookbook.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "chai": "^4.3.7",
-    "playwright-chromium": "^1.32.2"
+  "bugs": {
+    "url": "https://github.com/MadlenaIvanov/Cookbook/issues"
+  },
+  "homepage": "https://github.com/MadlenaIvanov/Cookbook#readme",
+  "dependencies": {
+    "lit-html": "^2.7.2"
   }
 }
